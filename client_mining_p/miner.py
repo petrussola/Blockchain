@@ -6,6 +6,7 @@ import json
 import time
 
 difficulty = 4
+coins = 0
 
 def proof_of_work(block):
     """
@@ -64,10 +65,12 @@ if __name__ == '__main__':
             break
 
         # TODO: Get the block from `data` and use it to look for a new proof
-        print(f'Started mining at {time.time()}')
+        tic = time.perf_counter()
+        print('Started mining')
         new_proof = proof_of_work(data)
+        toc = time.perf_counter()
         print(new_proof, "<<<<< proof")
-        print(f'Finished mining at {time.time()}')
+        print(f'Finished mining in {toc-tic:0.4f} seconds.')
 
         # When found, POST it to the server {"proof": new_proof, "id": id}
         post_data = {"proof": new_proof, "id": id}
@@ -79,6 +82,7 @@ if __name__ == '__main__':
         # add 1 to the number of coins mined and print it.  Otherwise,
         # print the message from the server.
         if data["message"] == "New Block Forged":
-            pass
+            coins += 1
+            print(f'Congrats! {data["message"]}. You have now {coins} coins')
         else:
             print(data["message"])
