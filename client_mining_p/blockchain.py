@@ -125,10 +125,11 @@ blockchain = Blockchain()
 def mine():
     # * Use `data = request.get_json()` to pull the data out of the POST
     data = request.get_json()
-    print(data, "<<<< data")
     if "proof" in data and "id" in data:
+        previous_hash = blockchain.hash(blockchain.last_block)
+        block = blockchain.new_block(data["proof"], previous_hash)
         response = {
-            "message": "success"
+            "message": "New Block Forged"
         }
     else:
         response = {
@@ -156,7 +157,7 @@ def full_chain():
     return jsonify(response), 200
 
 
-@app.route('/lastblock', methods=['GET'])
+@app.route('/last_block', methods=['GET'])
 def get_last_block():
     block = blockchain.chain[-1]
     return block
