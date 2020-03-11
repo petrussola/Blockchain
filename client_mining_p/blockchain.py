@@ -66,12 +66,9 @@ class Blockchain(object):
         # This can be hard to read, but .hexdigest() converts the
         # hash to a string of hexadecimal characters, which is
         # easier to work with and understand
-        
-
 
         # Return the hashed block string in hexadecimal format
         return hashlib.sha256(block_string).hexdigest()
-
 
     @property
     def last_block(self):
@@ -89,7 +86,7 @@ class Blockchain(object):
     #     proof = 0
     #     # loop while the return from a call to valid proof is False
     #     while self.valid_proof(block_string, proof) is False:
-    #         proof += 1        
+    #         proof += 1
     #     # return proof
     #     return proof
 
@@ -114,7 +111,6 @@ class Blockchain(object):
         return guess_hash[:3] == "000000"
 
 
-
 # Instantiate our Node
 app = Flask(__name__)
 
@@ -134,7 +130,7 @@ def mine():
     previous_hash = blockchain.hash(blockchain.last_block)
     block = blockchain.new_block(proof, previous_hash)
 
-    response = { "block": block }
+    response = {"block": block}
 
     return jsonify(response), 200
 
@@ -146,6 +142,12 @@ def full_chain():
         "chain": blockchain.chain
     }
     return jsonify(response), 200
+
+
+@app.route('/lastblock', methods=['GET'])
+def get_last_block():
+    block = blockchain.chain[-1]
+    return block
 
 
 # Run the program on port 5000
