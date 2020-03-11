@@ -120,19 +120,31 @@ node_identifier = str(uuid4()).replace('-', '')
 # Instantiate the Blockchain
 blockchain = Blockchain()
 
-
-@app.route('/mine', methods=['GET'])
+# * It should accept a POST
+@app.route('/mine', methods=['POST'])
 def mine():
-    # Run the proof of work algorithm to get the next proof
-    proof = blockchain.proof_of_work(blockchain.last_block)
+    # * Use `data = request.get_json()` to pull the data out of the POST
+    data = request.get_json()
+    print(data, "<<<< data")
+    if "proof" in data and "id" in data:
+        response = {
+            "message": "success"
+        }
+    else:
+        response = {
+            "message": "Invalid request"
+        }
+    return jsonify(response), 400
+    # # Run the proof of work algorithm to get the next proof
+    # proof = blockchain.proof_of_work(blockchain.last_block)
 
-    # Forge the new Block by adding it to the chain with the proof
-    previous_hash = blockchain.hash(blockchain.last_block)
-    block = blockchain.new_block(proof, previous_hash)
+    # # Forge the new Block by adding it to the chain with the proof
+    # previous_hash = blockchain.hash(blockchain.last_block)
+    # block = blockchain.new_block(proof, previous_hash)
 
-    response = {"block": block}
+    # response = {"block": block}
 
-    return jsonify(response), 200
+    # return jsonify(response), 200
 
 
 @app.route('/chain', methods=['GET'])
