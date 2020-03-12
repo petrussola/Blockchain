@@ -111,6 +111,13 @@ class Blockchain(object):
         # then return True if the guess hash has the valid number of leading zeros otherwise return False
         return guess_hash[:3] == "000000"
 
+    def new_transactions(self, sender, recipient, amount):
+        self.current_transactions.append({
+            "sender": sender,
+            "recipient": recipient,
+            "amount": amount
+        })
+
     def write_file(self, text):
         with open("my_id.txt", "w+") as f:
             f.write(text)
@@ -142,6 +149,7 @@ def mine():
     if "proof" in data and "id" in data:
         previous_hash = blockchain.hash(blockchain.last_block)
         block = blockchain.new_block(data["proof"], previous_hash)
+        blockchain.new_transactions('0', data["id"], 1)
         response = {
             "message": "New Block Forged",
             "block": block
