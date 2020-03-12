@@ -132,11 +132,12 @@ def mine():
             "message": "New Block Forged",
             "block": block
         }
+        return jsonify(response), 201
     else:
         response = {
             "message": "Invalid request"
         }
-    return jsonify(response), 400
+        return jsonify(response), 400
     # # Run the proof of work algorithm to get the next proof
     # proof = blockchain.proof_of_work(blockchain.last_block)
 
