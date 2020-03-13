@@ -7,6 +7,7 @@ from time import time
 from uuid import uuid4
 
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 
 class Blockchain(object):
@@ -110,9 +111,29 @@ class Blockchain(object):
         # then return True if the guess hash has the valid number of leading zeros otherwise return False
         return guess_hash[:3] == "000000"
 
+    def new_transactions(self, sender, recipient, amount):
+        self.current_transactions.append({
+            "sender": sender,
+            "recipient": recipient,
+            "amount": amount
+        })
+
+    def write_file(self, text):
+        with open("my_id.txt", "w+") as f:
+            f.write(text)
+            id = f.read()
+        f.close()
+        # return id
+
+    def read_file(self):
+        with open("my_id.txt", "r") as f:
+            id = f.read()
+        f.close()
+        return id
 
 # Instantiate our Node
 app = Flask(__name__)
+CORS(app)
 
 # Generate a globally unique address for this node
 node_identifier = str(uuid4()).replace('-', '')
@@ -128,6 +149,7 @@ def mine():
     if "proof" in data and "id" in data:
         previous_hash = blockchain.hash(blockchain.last_block)
         block = blockchain.new_block(data["proof"], previous_hash)
+        blockchain.new_transactions('0', data["id"], 1)
         response = {
             "message": "New Block Forged",
             "block": block
@@ -163,6 +185,15 @@ def full_chain():
 def get_last_block():
     block = blockchain.chain[-1]
     return block
+
+@app.route("/set_id", methods=['POST'])
+def set_id():
+    data = request.get_json()
+    id = data.get("id")
+    blockchain.write_file(id)
+    id = blockchain.read_file()
+    return jsonify({"id": id}), 200
+
 
 
 # Run the program on port 5000
